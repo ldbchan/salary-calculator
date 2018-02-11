@@ -1,153 +1,159 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="author" content="ldbchan">
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="bootstrap/js/bootstrap.min.js"></script>
 </head>
-<body>
-   <div class="container">
-      <div class="row title" style="margin-top: 50px; margin-bottom:20px;">
-        <h3 style="text-align: center;">薪資試算</h3>
-        <h5 style="text-align: center;">﹝公、民營事業、機構及有一定雇主之受僱者適用﹞</h5>
-      </div>
-      <form class="form-horizontal">
-        <div class="form-group">
-          <label for="basePay" class="col-xs-3 control-label" style="text-align: right;">基本月薪</label>
-          <div class="col-xs-7" style="text-align: right;">
-            <input type="number" class="form-control" id="basePay" value="20008" min="1" maxlength=8>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="workdays" class="col-xs-3 control-label" style="text-align: right;">工作天數</label>
-          <div class="col-xs-7">
-            <select class="form-control" id="workdays">
-              <option value=1>1</option>
-              <option value=2>2</option>
-              <option value=3>3</option>
-              <option value=4>4</option>
-              <option value=5>5</option>
-              <option value=6>6</option>
-              <option value=7>7</option>
-              <option value=8>8</option>
-              <option value=9>9</option>
-              <option value=10>10</option>
-              <option value=11>11</option>
-              <option value=12>12</option>
-              <option value=13>13</option>
-              <option value=14>14</option>
-              <option value=15>15</option>
-              <option value=16>16</option>
-              <option value=17>17</option>
-              <option value=18>18</option>
-              <option value=19>19</option>
-              <option value=20>20</option>
-              <option value=21>21</option>
-              <option value=22>22</option>
-              <option value=23>23</option>
-              <option value=24>24</option>
-              <option value=25>25</option>
-              <option value=26>26</option>
-              <option value=27>27</option>
-              <option value=28>28</option>
-              <option value=29>29</option>
-              <option value=30 selected="selected">30</option>
-            </select>
-          </div>
-        </div>
-          <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-7">
-              <button type="button" class="btn btn-default" id="calculate">計算實領薪水</button>
-            </div>
-        </div>
-      </form>
-      <hr class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-xs-8"/>
-      <ul class="list-unstyled">
-       <li class="row">
-          <div class="col-xs-3" style="text-align: right;"><b>應領薪水</b></div>
-          <div id="pay" class="col-xs-7">0</div>
-        </li>
-        <br/>
-        <li class="row" style="color: red;">
-          <div class="col-xs-3" style="text-align: right;"><b>- 勞保自付</b></div>
-          <div id="labor-insurance" class="col-xs-7">0</div>
-        </li>
-        <li class="row" style="color: red;">
-          <div class="col-xs-3" style="text-align: right;"><b>- 健保自付</b></div>
-          <div id="health-insurance" class="col-xs-7">0</div>
-        </li>
-        <br/>
-        <li class="row">
-          <div class="col-xs-3" style="text-align: right;"><b>實領薪水</b></div>
-          <div id="actualPay" class="col-xs-7">0</div>
-        </li>
-      </ul>
-  </div>
-  
-  <script>
-    document.getElementById("basePay").onkeypress = function (evt) {
-      if (document.getElementById("basePay").value.length >= 8)
-        return false;
-        
-      var charCode = (evt.which) ? evt.which : evt.keyCode;
-      if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
-      
-      return true;
-    }
-    
-    document.getElementById("calculate").onclick = function() {
-      var laborLevels = [11100, 12540, 13500, 15840, 16500, 17280, 17880, 19047,
-                         20008, 20100, 21000, 21900, 22800, 24000, 25200, 26400,
-                         24600, 28800, 30300, 31800, 33300, 34800, 36300, 38200,
-                         40100, 42000, 43900, 45800];
-      var healthLevels = [20008,  20100,  21000,  21900,  22800,  24000,  25200, 
-                          26400,  27600,  28800,  30300,  31800,  33300,  34800,
-                          36300,  38200,  40100,  42000,  43900,  45800,  48200,
-                          50600,  53000,  55400,  57800,  60800,  63800,  66800,
-                          69800,  72800,  76500,  80200,  83900,  87600,  92100,
-                          96600, 101100, 105600, 110100, 115500, 120900, 126300,
-                         131700, 137100, 142500, 147900, 150000, 156400, 162800,
-                         169200, 175600, 182000];
-      
-      var basePay = document.getElementById("basePay").value;
 
-      if (isNaN(basePay) || basePay <= 0 || basePay.length > 8) {
-        alert('Please enter number between 1~99999999');
-        document.getElementById("labor-insurance").innerHTML = 0;
-        document.getElementById("health-insurance").innerHTML = 0;
-        document.getElementById("actualPay").innerHTML = 0;
-        return;
-      }
-      
-      var workdaysSelector = document.getElementById("workdays");
-      var workdays = workdaysSelector.options[workdaysSelector.selectedIndex].value;
-      
-      var pay = basePay / 30 * workdays;
-      
-      var labor = laborLevels[laborLevels.length - 1];
-      for (var lIndex = laborLevels.length - 1; lIndex > 0; lIndex--) {
-        if (basePay < laborLevels[lIndex]) {
-          labor = laborLevels[lIndex];
+<body>
+    <div class="container">
+        <div class="row title" style="margin-top: 50px; margin-bottom:20px;">
+            <h3 style="text-align: center;">薪資試算</h3>
+            <h5 style="text-align: center;">﹝107.01.01 起公、民營事業、機構及有一定雇主之受僱者適用﹞</h5>
+        </div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="basePay" class="col-xs-3 control-label" style="text-align: right;">基本月薪</label>
+                <div class="col-xs-7" style="text-align: right;">
+                    <input type="number" class="form-control" id="basePay" value="20008" min="1" maxlength=8>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="workdays" class="col-xs-3 control-label" style="text-align: right;">工作天數</label>
+                <div class="col-xs-7">
+                    <select class="form-control" id="workdays"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-7">
+                    <button type="button" class="btn btn-default" id="calculate">計算實領薪水</button>
+                </div>
+            </div>
+        </form>
+        <hr class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-xs-8" />
+        <ul class="list-unstyled">
+            <li class="row">
+                <div class="col-xs-3" style="text-align: right;"><b>應領薪水</b></div>
+                <div id="pay" class="col-xs-7">0</div>
+            </li>
+            <br/>
+            <li class="row" style="color: red;">
+                <div class="col-xs-3" style="text-align: right;"><b>- 勞保自付</b></div>
+                <div id="labor-insurance" class="col-xs-7">0</div>
+            </li>
+            <li class="row" style="color: red;">
+                <div class="col-xs-3" style="text-align: right;"><b>- 健保自付</b></div>
+                <div id="health-insurance" class="col-xs-7">0</div>
+            </li>
+            <br/>
+            <li class="row">
+                <div class="col-xs-3" style="text-align: right;"><b>實領薪水</b></div>
+                <div id="actualPay" class="col-xs-7">0</div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // set up workdays options
+        (function() {
+            var workdaysSelector = document.getElementById('workdays');
+
+            for (var day = 1; day < 31; day++) {
+                var option = document.createElement('option');
+                option.value = day;
+                option.selected = (day == 30); // set default workdays to 30
+                option.appendChild(document.createTextNode(day));
+                workdaysSelector.appendChild(option);
+            }
+        }());
+
+        document.getElementById("basePay").onkeypress = function(evt) {
+            var basePayString = document.getElementById("basePay").value;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            var isEnter = (13 == charCode);
+            var isNumber = (48 <= charCode && charCode <= 57);
+            var isControl = (charCode < 31);
+
+            if (isNumber) {
+                if (basePayString.length >= 8) {
+                    return false;
+                }
+                return true;
+            }
+
+            if (isControl) {
+                if (isEnter) {
+                    calculate();
+                    return false;
+                }
+                return true;
+            }
+
+            return false;
         }
-      }
-      labor = Math.round(labor * (0.09 + 0.01) * 0.2 / 30 * workdays);
-      
-      var health = healthLevels[healthLevels.length - 1];
-      for (var hIndex = healthLevels.length - 1; hIndex > 0; hIndex--) {
-        if (basePay < healthLevels[hIndex]) {
-          health = healthLevels[hIndex];
+
+        document.getElementById("calculate").onclick = calculate();
+
+        function calculate() {
+            var laborLevels = [22000, 22800, 24000, 25200, 26400,
+                27600, 28800, 30300, 31800, 33300, 34800,
+                36300, 38200, 40100, 42000, 43900, 45800
+            ];
+            var healthLevels = [22000, 22800, 24000, 25200, 26400,
+                27600, 28800, 30300, 31800, 33300, 34800,
+                36300, 38200, 40100, 42000, 43900, 45800,
+                48200, 50600, 53000, 55400, 57800, 60800,
+                63800, 66800, 69800, 72800, 76500, 80200,
+                83900, 87600, 92100, 96600, 101100, 105600,
+                110100, 115500, 120900, 126300, 131700, 137100,
+                142500, 147900, 150000, 156400, 162800, 169200,
+                175600, 182000
+            ];
+
+            var basePay = document.getElementById("basePay").value;
+
+            if (isNaN(basePay) || basePay <= 0 || basePay.length > 8) {
+                alert('Please enter number between 1~99999999');
+                document.getElementById("labor-insurance").innerHTML = 0;
+                document.getElementById("health-insurance").innerHTML = 0;
+                document.getElementById("actualPay").innerHTML = 0;
+                return;
+            }
+
+            var workdaysSelector = document.getElementById("workdays");
+            var workdays = workdaysSelector.options[workdaysSelector.selectedIndex].value;
+
+            var pay = basePay / 30 * workdays;
+
+            var labor = laborLevels[laborLevels.length - 1];
+            for (var lIndex = laborLevels.length - 1; lIndex > 0; lIndex--) {
+                if (basePay < laborLevels[lIndex]) {
+                    labor = laborLevels[lIndex];
+                }
+            }
+            // 勞工保險普通事故保險費率按 9.5% 計算，就業保險費率按 1% 計算；被保險人負擔比率 20%
+            // 被保險人每月負擔保險費＝勞工保險普通事故保險費＋就業保險費
+            labor = Math.round(labor * (0.095 + 0.01) * 0.2 / 30 * workdays);
+
+            var health = healthLevels[healthLevels.length - 1];
+            for (var hIndex = healthLevels.length - 1; hIndex > 0; hIndex--) {
+                if (basePay < healthLevels[hIndex]) {
+                    health = healthLevels[hIndex];
+                }
+            }
+            // 自 105.01.01 起費率調整為 4.69％；被保險人及眷屬負擔比率 30%
+            health = Math.round(health * (4.69 / 100) * 0.3);
+
+            document.getElementById("pay").innerHTML = Math.round(pay);
+            document.getElementById("labor-insurance").innerHTML = labor;
+            document.getElementById("health-insurance").innerHTML = health;
+            document.getElementById("actualPay").innerHTML = Math.round(pay - labor - health);
         }
-      }
-      health = Math.round(health * (4.69 / 100) * 0.3);
-      
-      document.getElementById("pay").innerHTML = Math.round(pay);
-      document.getElementById("labor-insurance").innerHTML = labor;
-      document.getElementById("health-insurance").innerHTML = health;
-      document.getElementById("actualPay").innerHTML = Math.round(pay - labor - health);
-    }
-  </script>
+    </script>
 </body>
+
 </html>
