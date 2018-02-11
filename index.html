@@ -70,17 +70,33 @@
 	}());
 
     document.getElementById("basePay").onkeypress = function (evt) {
-      if (document.getElementById("basePay").value.length >= 8)
-        return false;
-        
+      var basePayString = document.getElementById("basePay").value;
       var charCode = (evt.which) ? evt.which : evt.keyCode;
-      if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
-      
-      return true;
+      var isEnter = (13 == charCode);
+      var isNumber = (48 <= charCode && charCode <= 57);
+      var isControl = (charCode < 31);
+
+	  if (isNumber) {
+	  	if (basePayString.length >= 8) {
+	  		return false;
+	  	}
+	  	return true;
+	  }
+
+	  if (isControl) {
+	  	if (isEnter) {
+	  		calculate();
+	  		return false;
+	  	}
+	  	return true;
+      }
+
+      return false;
     }
-    
-    document.getElementById("calculate").onclick = function() {
+
+    document.getElementById("calculate").onclick = calculate();
+
+    function calculate() {
       var laborLevels = [22000, 22800, 24000, 25200, 26400, 
                          27600, 28800, 30300, 31800, 33300, 34800, 
                          36300, 38200, 40100, 42000, 43900, 45800];
